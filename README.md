@@ -1,13 +1,13 @@
-VirtWeb
--------
+VirtAdmin
+---------
 
-Virtweb is a proof of concept libvirt web client.
+VirtAdmin is a proof of concept libvirt web client.
 It is based on the idea that virt-manager should be available as a web ui.
 
 Requirements
 ------------
 
-VirtWeb currently requires
+VirtAdmin currently requires
 - ssh key exchange without password
 - libvirtd configured for unix group acces (including the virtweb user)
 - mdns (libvirtd+avahi)
