@@ -1,0 +1,62 @@
+- import virtadmin.routes._
+
+!!! 5
+html
+  head
+    = antiCSRFMeta
+
+    meta(content="text/html; charset=utf-8" http-equiv="content-type")
+    title Welcome to VirtAdmin
+    link(type="image/vnd.microsoft.icon" rel="shortcut icon" href={urlForPublic("favicon.ico")})
+    link(type="text/css" rel="stylesheet" media="all" href={urlForPublic("css/bootstrap.css")})
+    link(type="text/css" rel="stylesheet" media="all" href={urlForPublic("css/virtweb.css")})
+
+  body
+    .navbar
+      .navbar-inner
+        .container
+          .nav-collapse
+            ul.nav
+              li.active
+                a(href={Index.index.url}) VirtAdmin
+
+    .container-fluid
+      .row-fluid
+        #server.span2
+          ! Server
+        .span10
+          #vm-buttons
+            button#start.btn-primary
+              ! start
+            button#reboot.btn-warning
+              ! reboot
+            button#shutdown.btn-warning
+              ! shut down
+            button#forceoff.btn-danger
+              ! force off
+          #noVNC_screen
+            canvas#noVNC_canvas(width="640px" height="20px")
+              ! No canvas support. Please use a (modern) browser.
+
+      .grid_12
+        #flash
+          !~ jsRenderFlash()
+        != renderedView
+
+    script(type="text/javascript" src={urlForPublic("js/base/jquery.js")})
+    script(type="text/javascript" src={urlForPublic("js/base/bootstrap-collaps.js")})
+    script(type="text/javascript" src={urlForPublic("js/base/underscore.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/util.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/webutil.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/base64.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/websock.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/des.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/input.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/display.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/rfb.js")})
+    script(type="text/javascript" src={urlForPublic("js/novnc/jsunzip.js")})
+    script(type="text/javascript" src={urlForPublic("js/virtweb/object.js")})
+    script(type="text/javascript" src={urlForPublic("js/virtweb/websocket.js")})
+    script(type="text/javascript" src={urlForPublic("js/virtweb/serverlist.js")})
+    script(type="text/javascript" src={urlForPublic("js/virtweb/mainpanel.js")})
+    script(type="text/javascript" src={urlForPublic("js/virtweb.js")})

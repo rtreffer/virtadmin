@@ -1,0 +1,68 @@
+package com.netiq.websockify;
+
+import io.netty.channel.ChannelFutureListener;
+
+import io.netty.handler.codec.frame.FrameDecoder;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.Channel;
+import io.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ChannelBuffers;
+import io.netty.util.CharsetUtil;
+
+/**
+ * A Flash policy file handler
+ * Will detect connection attempts made by Adobe Flash clients and return a policy file response
+ *
+ * After the policy has been sent, it will instantly close the connection.
+ * If the first bytes sent are not a policy file request the handler will simply remove itself
+ * from the pipeline.
+ *
+ * Read more at http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html
+ *
+ * Example usage:
+ * <code>
+ * ChannelPipeline pipeline = Channels.pipeline();
+ * pipeline.addLast("flashPolicy", new FlashPolicyHandler());
+ * pipeline.addLast("decoder", new MyProtocolDecoder());
+ * pipeline.addLast("encoder", new MyProtocolEncoder());
+ * pipeline.addLast("handler", new MyBusinessLogicHandler());
+ * </code>
+ */
+public class FlashPolicyHandler extends FrameDecoder {
+    private static final String XML = "<cross-domain-policy><allow-access-from domain=\"*\" to-ports=\"*\" /></cross-domain-policy>";
+    private ChannelBuffer policyResponse = ChannelBuffers.copiedBuffer(XML, CharsetUtil.UTF_8);
+
+    /**
+     * Creates a handler allowing access from any domain and any port
+     */
+    public FlashPolicyHandler() {
+        super();
+    }
+
+    /**
+     * Create a handler with a custom XML response. Useful for defining your own domains and ports.
+     * @param policyResponse Response XML to be passed back to a connecting client
+     */
+    public FlashPolicyHandler(ChannelBuffer policyResponse) {
+        super();
+        this.policyResponse = policyResponse;
+    }
+
+    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
+        if (buffer.readableBytes() < 2) {
+            return null;
+        }
+
+        final int magic1 = buffer.getUnsignedByte(buffer.readerIndex());
+        final int magic2 = buffer.getUnsignedByte(buffer.readerIndex() + 1);
+        boolean isFlashPolicyRequest = (magic1 == '<' && magic2 == 'p');
+
+        if (isFlashPolicyRequest) {
+            buffer.skipBytes(buffer.readableBytes()); // Discard everything
+            channel.write(policyResponse).addListener(ChannelFutureListener.CLOSE);
+            return new FlashPolicyRequest();
+        }
+        
+        return null;
+    }
+}
